@@ -1,7 +1,9 @@
 from typing import Optional
 
 import torch
-from pyannote.audio import Pipeline
+# from pyannote.audio import Pipeline
+from diarizen.pipelines.inference import DiariZenPipeline
+
 from pyannote.audio.pipelines.utils.hook import ProgressHook
 from pyannote.core.annotation import Annotation
 
@@ -17,10 +19,12 @@ class PyAnnoteDiarization(DiarizationStrategy):
     def initialize_pipeline(self):
         """Lazy initialization of PyAnnote pipeline"""
         if self.pipeline is None:
-            self.pipeline = Pipeline.from_pretrained(
-                checkpoint_path="pyannote/speaker-diarization-3.1",
-                use_auth_token=self.huggingface_token,
-            )
+            # self.pipeline = Pipeline.from_pretrained(
+            #     checkpoint_path="pyannote/speaker-diarization-3.1",
+            #     use_auth_token=self.huggingface_token,
+            # )
+            self.pipeline = DiariZenPipeline.from_pretrained("BUT-FIT/diarizen-wavlm-large-s80-mlc")
+
             self.pipeline.instantiate({})
             self.pipeline.to(torch.device(self.device))
 
@@ -34,7 +38,7 @@ class PyAnnoteDiarization(DiarizationStrategy):
         self.initialize_pipeline()
 
         with ProgressHook() as hook:
-            diarization = self.pipeline(file_path, hook=hook, num_speakers=nb_speakers)
+            diarization = self.pipeline(file_path)#, hook=hook, num_speakers=nb_speakers)
 
         if out_rttm_file:
             self.save_rttm(diarization, out_rttm_file)

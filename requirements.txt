@@ -458,7 +458,7 @@ protobuf==6.30.2
     #   onnx
     #   onnxruntime
     #   tensorboardx
-pyannote-audio==3.3.2
+# pyannote-audio==3.3.2
     # via verbatim
 pyannote-core==5.0.0
     # via
